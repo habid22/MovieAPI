@@ -20,7 +20,14 @@ document.getElementById('movieForm').addEventListener('submit', async function(e
     const responsesDiv = document.getElementById('responses');
     responsesDiv.innerHTML = '<h2>Form Responses</h2>';
     responses.forEach(response => {
-      responsesDiv.innerHTML += `<p>ID: ${response.id}, Name: ${response.name}, Movie Title: ${response.movie_title}, Rating: ${response.rating}</p>`;
+      responsesDiv.innerHTML += `
+        <div class="response-card">
+          <p class="details">Name: ${response.name}, Movie Title: ${response.movie_title}, Rating: ${response.rating}</p>
+          <h3>${response.movie_title} (${response.movie_year})</h3>
+          <p>${response.movie_plot}</p>
+          <img src="${response.movie_poster}" alt="Poster of ${response.movie_title}">
+        </div>
+      `;
     });
   }
   

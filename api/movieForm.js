@@ -6,22 +6,51 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/', async (req, res) => {
-  const { name, movie_title, rating } = req.body;
+const apiKey = '61d20bdd'; // Your OMDb API key
 
-  // Fetch movie information from OMDb API
-  const apiKey = '61d20bdd';
-  const response = await axios.get(`http://www.omdbapi.com/?t=${movie_title}&apikey=${apiKey}`);
+// Endpoint to search for a movie
+app.get('/search/:title', async (req, res) => {
+  const { title } = req.params;
+  const response = await axios.get(`http://www.omdbapi.com/?t=${title}&apikey=${apiKey}`);
   const movie = response.data;
 
-  const movieYear = movie.Year || '';
-  const moviePlot = movie.Plot || '';
-  const moviePoster = movie.Poster || '';
+  if (movie.Response === 'True') {
+    db.get(`SELECT * FROM movies WHERE title = ?`, [movie.Title], (err, row) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (row) {
+        res.json(row);
+      } else {
+        db.run(
+          `INSERT INTO movies (title, year, plot, poster) VALUES (?, ?, ?, ?)`,
+          [movie.Title, movie.Year, movie.Plot, movie.Poster],
+          function(err) {
+            if (err) {
+              return res.status(500).json({ error: err.message });
+            }
+            res.json({
+              id: this.lastID,
+              title: movie.Title,
+              year: movie.Year,
+              plot: movie.Plot,
+              poster: movie.Poster
+            });
+          }
+        );
+      }
+    });
+  } else {
+    res.status(404).json({ error: 'Movie not found' });
+  }
+});
 
+// Endpoint to add a review for a movie
+app.post('/reviews', (req, res) => {
+  const { movie_id, name, rating, notes } = req.body;
   db.run(
-    `INSERT INTO form_responses (name, movie_title, rating, movie_year, movie_plot, movie_poster)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [name, movie_title, rating, movieYear, moviePlot, moviePoster],
+    `INSERT INTO reviews (movie_id, name, rating, notes) VALUES (?, ?, ?, ?)`,
+    [movie_id, name, rating, notes],
     function(err) {
       if (err) {
         return res.status(500).json({ error: err.message });
@@ -31,23 +60,19 @@ app.post('/', async (req, res) => {
   );
 });
 
-app.get('/:id', (req, res) => {
-  const { id } = req.params;
-  db.get('SELECT * FROM form_responses WHERE id = ?', [id], (err, row) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
+// Endpoint to get reviews for a movie
+app.get('/reviews/:movie_id', (req, res) => {
+  const { movie_id } = req.params;
+  db.all(
+    `SELECT * FROM reviews WHERE movie_id = ?`,
+    [movie_id],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(rows);
     }
-    res.json(row);
-  });
-});
-
-app.get('/', (req, res) => {
-  db.all('SELECT * FROM form_responses', [], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(rows);
-  });
+  );
 });
 
 module.exports = app;

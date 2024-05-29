@@ -1,8 +1,13 @@
+// Function to search for a movie
 async function searchMovie() {
+  // Get the movie title from the input field
   const movieTitle = document.getElementById('searchMovie').value;
+
+  // Fetch movie data from the API
   const response = await fetch(`/api/form/search/${movieTitle}`);
   const movie = await response.json();
 
+  // Get the movie details and reviews divs
   const movieDetailsDiv = document.getElementById('movieDetails');
   const reviewsDiv = document.getElementById('reviews');
   
@@ -10,9 +15,11 @@ async function searchMovie() {
   movieDetailsDiv.innerHTML = '';
   reviewsDiv.innerHTML = '';
 
+  // Check if there was an error fetching the movie data
   if (movie.error) {
     movieDetailsDiv.innerHTML = `<p class="text-danger">${movie.error}</p>`;
   } else {
+    // Display the movie details
     movieDetailsDiv.innerHTML = `
       <div class="card mb-4">
         <div class="row no-gutters">
@@ -30,12 +37,17 @@ async function searchMovie() {
         </div>
       </div>
     `;
+    // Load and display the reviews for the movie
     loadReviews(movie.id);
   }
 }
 
+// Function to show the review form
 function showReviewForm(movieId) {
+  // Get the div where the review form will be displayed
   const reviewFormDiv = document.getElementById(`reviewForm-${movieId}`);
+
+  // Display the review form
   reviewFormDiv.innerHTML = `
     <form id="reviewForm" onsubmit="submitReview(event, ${movieId})" class="needs-validation" novalidate>
       <div class="form-group">
@@ -70,26 +82,41 @@ function showReviewForm(movieId) {
   });
 }
 
+// Function to submit a review
 async function submitReview(event, movieId) {
+  // Prevent the default form submission behavior
   event.preventDefault();
+
+  // Get the review details from the form fields
   const name = document.getElementById('name').value;
   const rating = document.getElementById('rating').value;
   const notes = document.getElementById('notes').value;
 
+  // Send the review data to the server
   const response = await fetch('/api/form/reviews', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ movie_id: movieId, name, rating, notes })
   });
   const result = await response.json();
+
+  // Alert the user that the review was submitted
   alert('Review submitted with ID: ' + result.id);
+
+  // Reload the reviews for the movie
   loadReviews(movieId);
 }
 
+// Function to load and display reviews for a movie
 async function loadReviews(movieId) {
+  // Fetch the reviews for the movie from the server
   const response = await fetch(`/api/form/reviews/${movieId}`);
   const reviews = await response.json();
+
+  // Get the reviews div
   const reviewsDiv = document.getElementById('reviews');
+  
+  // Display the reviews
   reviewsDiv.innerHTML = '<h2 class="mt-4">Reviews</h2>';
   reviews.forEach(review => {
     reviewsDiv.innerHTML += `

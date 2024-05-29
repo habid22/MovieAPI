@@ -23,9 +23,9 @@ This project is a movie review web application that allows users to search for m
 ## Running the Application
 
 1. Start the server:
-```bash
+    ```bash
     node server.js
-```
+
 2. Open the web application:
 Open your web browser and navigate to http://localhost:3000.
 

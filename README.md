@@ -52,9 +52,9 @@ Open your web browser and navigate to http://localhost:3000.
 
 
 ## Frontend Functionality
-### Search Movie: Allows users to search for a movie and display its details
-### Add Review: Allows users to add a review for the displayed movie
-### View Reviews: Displays all reviews for the displayed movie
+-  Search Movie: Allows users to search for a movie and display its details
+- Add Review: Allows users to add a review for the displayed movie
+- View Reviews: Displays all reviews for the displayed movie
 
 
 ## Extensions and Improvements

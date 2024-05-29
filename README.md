@@ -17,7 +17,7 @@ This project is a movie review web application that allows users to search for m
    cd project
 
 2. Install dependencies:
-    npm install
+   ```bash npm install
 
 ## Running the Application
 

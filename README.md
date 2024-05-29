@@ -17,13 +17,15 @@ This project is a movie review web application that allows users to search for m
    cd project
 
 2. Install dependencies:
-   ```bash npm install
+   ```bash 
+   npm install
 
 ## Running the Application
 
 1. Start the server:
+```bash
 node server.js
-
+```
 2. Open the web application:
 Open your web browser and navigate to http://localhost:3000.
 
